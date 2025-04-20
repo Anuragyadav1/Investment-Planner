@@ -119,7 +119,8 @@ const Dashboard = () => {
                     {plan.planName || "My Investment Plan"}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Monthly Investment: ₹{plan.monthlyInvestment}
+                    Monthly Investment: ₹
+                    {plan.monthlyIncome?.toLocaleString() || 0}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Risk Level: {plan.riskLevel}
