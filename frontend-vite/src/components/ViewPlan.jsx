@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import axiosInstance from "../utils/axios";
 import {
   Container,
   Typography,
@@ -47,7 +48,7 @@ const ViewPlan = () => {
 
   const fetchPlan = async () => {
     try {
-      const response = await axios.get(`/api/investment/plans/${id}`);
+      const response = await axiosInstance.get(`/investment/plans/${id}`);
       setPlan(response.data);
     } catch (err) {
       setError("Failed to load investment plan");

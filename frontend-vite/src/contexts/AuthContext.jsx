@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import axios from "axios";
-
+import axiosInstance from "../utils/axios";  // Use the custom axios instance
 const AuthContext = createContext(null);
 
 export const useAuth = () => {
@@ -15,7 +14,7 @@ export const AuthProvider = ({ children }) => {
     // Check if user is logged in on mount
     const token = localStorage.getItem("token");
     if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       // Fetch user data
       fetchUserData();
     } else {
@@ -25,13 +24,13 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get("/api/auth/me");
+      const response = await axiosInstance.get("/auth/me");  // Use axiosInstance
       setUser(response.data);
     } catch (error) {
       console.error("Error fetching user data:", error);
       // If token is invalid or expired, clear it
       localStorage.removeItem("token");
-      delete axios.defaults.headers.common["Authorization"];
+      delete axiosInstance.defaults.headers.common["Authorization"];
     } finally {
       setLoading(false);
     }
@@ -39,10 +38,10 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post("/api/auth/login", { email, password });
+      const response = await axiosInstance.post("/auth/login", { email, password });
       const { token, user } = response.data;
       localStorage.setItem("token", token);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       setUser(user);
       return { success: true };
     } catch (error) {
@@ -56,10 +55,10 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const response = await axios.post("/api/auth/register", userData);
+      const response = await axiosInstance.post("/auth/register", userData);
       const { token, user } = response.data;
       localStorage.setItem("token", token);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       setUser(user);
       return { success: true };
     } catch (error) {
@@ -74,7 +73,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem("token");
-    delete axios.defaults.headers.common["Authorization"];
+    delete axiosInstance.defaults.headers.common["Authorization"];
     setUser(null);
   };
 

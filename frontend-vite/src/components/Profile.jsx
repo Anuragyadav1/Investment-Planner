@@ -20,6 +20,7 @@ import {
   TrendingUp as TrendingUpIcon,
   ArrowForward as ArrowForwardIcon,
 } from "@mui/icons-material";
+import axiosInstance from "../utils/axios";
 
 const Profile = () => {
   const { user } = useAuth();
@@ -33,7 +34,7 @@ const Profile = () => {
 
   const fetchPlans = async () => {
     try {
-      const response = await axios.get("/api/investment/plans");
+      const response = await axiosInstance.get("/api/investment/plans");
       setPlans(response.data);
     } catch (error) {
       console.error("Error fetching plans:", error);

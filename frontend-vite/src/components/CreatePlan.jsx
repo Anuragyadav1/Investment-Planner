@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
+import axiosInstance from "../utils/axios";
 
 const steps = ["Basic Information", "Review & Generate Plan"];
 
@@ -76,8 +77,8 @@ const CreatePlan = () => {
     }
 
     try {
-      const response = await axios.post(
-        "/api/investment/create",
+      const response = await axiosInstance.post(
+        "/investment/create",
         {
           planName: formData.planName || "My Investment Plan",
           monthlyIncome: Number(formData.monthlyIncome),

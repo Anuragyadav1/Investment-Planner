@@ -107,27 +107,30 @@ const Navbar = () => {
               open={Boolean(mobileMenuAnchor)}
               onClose={handleClose}
             >
-              {user ? (
-                <>
-                  <MenuItem component={RouterLink} to="/dashboard">
-                    Dashboard
-                  </MenuItem>
-                  <MenuItem component={RouterLink} to="/create-plan">
-                    Create Plan
-                  </MenuItem>
-                  <MenuItem onClick={handleProfile}>Profile</MenuItem>
-                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                </>
-              ) : (
-                <>
-                  <MenuItem component={RouterLink} to="/login">
-                    Login
-                  </MenuItem>
-                  <MenuItem component={RouterLink} to="/register">
-                    Register
-                  </MenuItem>
-                </>
-              )}
+              {user
+                ? [
+                    <MenuItem key="dashboard" component={RouterLink} to="/dashboard">
+                      Dashboard
+                    </MenuItem>,
+                    <MenuItem key="create-plan" component={RouterLink} to="/create-plan">
+                      Create Plan
+                    </MenuItem>,
+                    <MenuItem key="profile" onClick={handleProfile}>
+                      Profile
+                    </MenuItem>,
+                    <MenuItem key="logout" onClick={handleLogout}>
+                      Logout
+                    </MenuItem>,
+                  ]
+                : [
+                    <MenuItem key="login" component={RouterLink} to="/login">
+                      Login
+                    </MenuItem>,
+                    <MenuItem key="register" component={RouterLink} to="/register">
+                      Register
+                    </MenuItem>,
+                  ]}
+
             </Menu>
           </>
         ) : (

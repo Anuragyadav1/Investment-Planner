@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../utils/axios";
 import {
   Container,
   Typography,
@@ -34,7 +35,7 @@ const Dashboard = () => {
 
   const fetchPlans = async () => {
     try {
-      const response = await axios.get("/api/investment/plans");
+      const response = await axiosInstance.get("/investment/plans");
       setPlans(response.data);
     } catch (error) {
       console.error("Error fetching plans:", error);
@@ -54,7 +55,7 @@ const Dashboard = () => {
   const handleDeletePlan = async (planId) => {
     if (window.confirm("Are you sure you want to delete this plan?")) {
       try {
-        await axios.delete(`/api/investment/plans/${planId}`);
+        await axiosInstance.delete(`/investment/plans/${planId}`);
         setPlans(plans.filter((plan) => plan._id !== planId));
       } catch (error) {
         console.error("Error deleting plan:", error);
