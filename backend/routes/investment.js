@@ -56,7 +56,8 @@ router.post(
 
       // Create new investment plan
       const plan = new InvestmentPlan({
-        user: req.userId,
+        userId: req.userId,
+        planName: req.body.planName,
         monthlyIncome,
         riskLevel,
         allocation,
@@ -76,7 +77,7 @@ router.post(
 // Get user's investment plans
 router.get("/plans", auth, async (req, res) => {
   try {
-    const plans = await InvestmentPlan.find({ user: req.userId }).sort({
+    const plans = await InvestmentPlan.find({ userId: req.userId }).sort({
       createdAt: -1,
     });
     res.json(plans);
@@ -91,7 +92,7 @@ router.get("/plans/:planId", auth, async (req, res) => {
   try {
     const plan = await InvestmentPlan.findOne({
       _id: req.params.planId,
-      user: req.userId,
+      userId: req.userId,
     });
 
     if (!plan) {
@@ -110,7 +111,7 @@ router.delete("/plans/:planId", auth, async (req, res) => {
   try {
     const plan = await InvestmentPlan.findOneAndDelete({
       _id: req.params.planId,
-      user: req.userId,
+      userId: req.userId,
     });
 
     if (!plan) {
@@ -147,7 +148,7 @@ router.patch("/toggle-share/:planId", auth, async (req, res) => {
   try {
     const plan = await InvestmentPlan.findOne({
       _id: req.params.planId,
-      user: req.userId,
+      userId: req.userId,
     });
 
     if (!plan) {

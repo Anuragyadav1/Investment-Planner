@@ -53,7 +53,7 @@ const Navbar = () => {
 
   const handleProfile = () => {
     handleClose();
-    navigate("/");
+    navigate("/profile");
   };
 
   const handleCreatePlan = () => {
@@ -67,7 +67,7 @@ const Navbar = () => {
         <Typography
           variant="h6"
           component={RouterLink}
-          to="/"
+          to={user ? "/" : "/home"}
           sx={{
             flexGrow: 1,
             textDecoration: "none",
@@ -80,51 +80,65 @@ const Navbar = () => {
           Investment Planner
         </Typography>
 
-        {user ? (
+        {isMobile ? (
           <>
-            {isMobile ? (
-              <>
-                <IconButton
-                  size="large"
-                  edge="end"
-                  color="inherit"
-                  aria-label="menu"
-                  onClick={handleMobileMenu}
-                >
-                  <MenuIcon />
-                </IconButton>
-                <Menu
-                  anchorEl={mobileMenuAnchor}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={Boolean(mobileMenuAnchor)}
-                  onClose={handleClose}
-                >
-                  <MenuItem onClick={handleProfile}>
-                    <DashboardIcon sx={{ mr: 2 }} /> Dashboard
+            <IconButton
+              size="large"
+              aria-label="menu"
+              aria-controls="mobile-menu"
+              aria-haspopup="true"
+              onClick={handleMobileMenu}
+              color="inherit"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              id="mobile-menu"
+              anchorEl={mobileMenuAnchor}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(mobileMenuAnchor)}
+              onClose={handleClose}
+            >
+              {user ? (
+                <>
+                  <MenuItem component={RouterLink} to="/dashboard">
+                    Dashboard
                   </MenuItem>
-                  <MenuItem onClick={handleCreatePlan}>
-                    <AddIcon sx={{ mr: 2 }} /> Create Plan
+                  <MenuItem component={RouterLink} to="/create-plan">
+                    Create Plan
                   </MenuItem>
-                  <MenuItem onClick={handleLogout}>
-                    <LogoutIcon sx={{ mr: 2 }} /> Logout
+                  <MenuItem onClick={handleProfile}>Profile</MenuItem>
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                </>
+              ) : (
+                <>
+                  <MenuItem component={RouterLink} to="/login">
+                    Login
                   </MenuItem>
-                </Menu>
-              </>
-            ) : (
+                  <MenuItem component={RouterLink} to="/register">
+                    Register
+                  </MenuItem>
+                </>
+              )}
+            </Menu>
+          </>
+        ) : (
+          <>
+            {user ? (
               <>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Button
                     color="inherit"
                     component={RouterLink}
-                    to="/"
+                    to="/dashboard"
                     startIcon={<DashboardIcon />}
                     sx={{ mr: 2 }}
                   >
@@ -179,27 +193,27 @@ const Navbar = () => {
                   </Menu>
                 </Box>
               </>
+            ) : (
+              <Box>
+                <Button
+                  color="inherit"
+                  component={RouterLink}
+                  to="/login"
+                  sx={{ mr: 1 }}
+                >
+                  Login
+                </Button>
+                <Button
+                  color="inherit"
+                  component={RouterLink}
+                  to="/register"
+                  variant="outlined"
+                >
+                  Register
+                </Button>
+              </Box>
             )}
           </>
-        ) : (
-          <Box>
-            <Button
-              color="inherit"
-              component={RouterLink}
-              to="/login"
-              sx={{ mr: 1 }}
-            >
-              Login
-            </Button>
-            <Button
-              color="inherit"
-              component={RouterLink}
-              to="/register"
-              variant="outlined"
-            >
-              Register
-            </Button>
-          </Box>
         )}
       </Toolbar>
     </AppBar>

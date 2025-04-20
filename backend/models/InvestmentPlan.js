@@ -1,10 +1,15 @@
 const mongoose = require("mongoose");
 
 const investmentPlanSchema = new mongoose.Schema({
-  user: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
+  },
+  planName: {
+    type: String,
+    required: true,
+    default: "My Investment Plan",
   },
   monthlyIncome: {
     type: Number,

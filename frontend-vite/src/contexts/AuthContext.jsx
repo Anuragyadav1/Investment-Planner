@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }) => {
       setUser(response.data);
     } catch (error) {
       console.error("Error fetching user data:", error);
+      // If token is invalid or expired, clear it
       localStorage.removeItem("token");
       delete axios.defaults.headers.common["Authorization"];
     } finally {
@@ -83,6 +84,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
+    token: localStorage.getItem("token"),
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

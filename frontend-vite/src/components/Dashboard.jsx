@@ -115,18 +115,17 @@ const Dashboard = () => {
             <Grid item xs={12} sm={6} md={4} key={plan._id}>
               <Card>
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {plan.name || "Investment Plan"}
+                  <Typography variant="h6" component="div">
+                    {plan.planName || "My Investment Plan"}
                   </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Created: {new Date(plan.createdAt).toLocaleDateString()}
+                  <Typography variant="body2" color="text.secondary">
+                    Monthly Investment: ₹{plan.monthlyInvestment}
                   </Typography>
-                  <Divider sx={{ my: 1 }} />
-                  <Typography variant="body2">
-                    Monthly Investment: ₹{plan.monthlyIncome.toLocaleString()}
-                  </Typography>
-                  <Typography variant="body2">
+                  <Typography variant="body2" color="text.secondary">
                     Risk Level: {plan.riskLevel}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Created: {new Date(plan.createdAt).toLocaleDateString()}
                   </Typography>
                 </CardContent>
                 <CardActions>

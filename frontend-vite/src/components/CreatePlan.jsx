@@ -16,8 +16,10 @@ import {
   StepLabel,
   Alert,
   CircularProgress,
+  Grid,
 } from "@mui/material";
 import axios from "axios";
+import { useAuth } from "../contexts/AuthContext";
 
 const steps = ["Basic Information", "Review & Generate Plan"];
 
@@ -25,19 +27,22 @@ const CreatePlan = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { token } = useAuth();
   const [formData, setFormData] = useState({
-    name: "",
+    planName: "",
     monthlyIncome: "",
     riskLevel: "Medium",
+    investmentGoal: "",
+    timeHorizon: "",
   });
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
   const handleNext = () => {
@@ -59,22 +64,43 @@ const CreatePlan = () => {
     setActiveStep((prevStep) => prevStep - 1);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setLoading(true);
     setError("");
-    try {
-      // Convert monthlyIncome to a number
-      const dataToSubmit = {
-        ...formData,
-        monthlyIncome: Number(formData.monthlyIncome),
-      };
 
-      const response = await axios.post("/api/investment/create", dataToSubmit);
+    if (!token) {
+      setError("Please log in to create an investment plan");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "/api/investment/create",
+        {
+          planName: formData.planName || "My Investment Plan",
+          monthlyIncome: Number(formData.monthlyIncome),
+          riskLevel:
+            formData.riskLevel.charAt(0).toUpperCase() +
+            formData.riskLevel.slice(1).toLowerCase(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       navigate(`/view-plan/${response.data._id}`);
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Failed to create investment plan"
-      );
+      console.error("Error creating plan:", err);
+      if (err.response?.status === 401) {
+        setError("Your session has expired. Please log in again.");
+      } else {
+        setError(
+          err.response?.data?.message || "Failed to create investment plan"
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -84,38 +110,46 @@ const CreatePlan = () => {
     switch (step) {
       case 0:
         return (
-          <Box sx={{ mt: 2 }}>
-            <TextField
-              fullWidth
-              label="Plan Name (Optional)"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              label="Monthly Income (₹)"
-              name="monthlyIncome"
-              type="number"
-              value={formData.monthlyIncome}
-              onChange={handleChange}
-              margin="normal"
-              required
-            />
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Risk Level</InputLabel>
-              <Select
-                name="riskLevel"
-                value={formData.riskLevel}
-                onChange={handleChange}
-                label="Risk Level"
-              >
-                <MenuItem value="Low">Low Risk</MenuItem>
-                <MenuItem value="Medium">Medium Risk</MenuItem>
-                <MenuItem value="High">High Risk</MenuItem>
-              </Select>
-            </FormControl>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  label="Plan Name"
+                  name="planName"
+                  value={formData.planName}
+                  onChange={handleChange}
+                  placeholder="Enter a name for your investment plan"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  label="Monthly Income"
+                  name="monthlyIncome"
+                  type="number"
+                  value={formData.monthlyIncome}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Risk Level</InputLabel>
+                  <Select
+                    name="riskLevel"
+                    value={formData.riskLevel}
+                    onChange={handleChange}
+                    label="Risk Level"
+                  >
+                    <MenuItem value="Low">Low Risk</MenuItem>
+                    <MenuItem value="Medium">Medium Risk</MenuItem>
+                    <MenuItem value="High">High Risk</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
           </Box>
         );
       case 1:
@@ -126,7 +160,8 @@ const CreatePlan = () => {
             </Typography>
             <Paper sx={{ p: 2, mt: 2 }}>
               <Typography variant="body1">
-                <strong>Plan Name:</strong> {formData.name || "Unnamed Plan"}
+                <strong>Plan Name:</strong>{" "}
+                {formData.planName || "Unnamed Plan"}
               </Typography>
               <Typography variant="body1">
                 <strong>Monthly Income:</strong> ₹
