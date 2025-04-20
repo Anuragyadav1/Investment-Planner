@@ -48,7 +48,7 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     handleClose();
-    navigate("/login");
+    navigate("/");
   };
 
   const handleProfile = () => {
