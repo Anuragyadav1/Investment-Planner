@@ -135,7 +135,7 @@ const Dashboard = () => {
         <div style="margin-bottom: 20px;">
           <h2>Investment Recommendations</h2>
           <p>${
-            plan.recommendations ||
+            plan.recommendations?.sips ||
             "Based on your risk profile and monthly investment amount, we recommend diversifying your portfolio across different asset classes to balance risk and potential returns."
           }</p>
         </div>

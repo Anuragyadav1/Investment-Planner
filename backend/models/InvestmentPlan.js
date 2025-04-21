@@ -38,6 +38,12 @@ const investmentPlanSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  recommendations: {
+    sips: { type: String },
+    cryptocurrency: { type: String },
+    gold: { type: String },
+  },
+
   createdAt: {
     type: Date,
     default: Date.now,

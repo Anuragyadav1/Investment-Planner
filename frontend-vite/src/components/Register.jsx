@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { useNavigate, useLocation, Link as RouterLink } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import {
   Container,
@@ -24,6 +24,10 @@ const Register = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  //Get the location and intended path:
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
+
   const { register } = useAuth();
 
   const handleChange = (e) => {
@@ -56,7 +60,7 @@ const Register = () => {
       });
 
       if (result.success) {
-        navigate("/");
+          navigate(from, { replace: true });//After successful signup, redirect to from
       } else {
         setError(result.error);
       }

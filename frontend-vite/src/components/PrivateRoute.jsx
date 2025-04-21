@@ -1,10 +1,12 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { CircularProgress, Box } from "@mui/material";
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
+
 
   if (loading) {
     return (
@@ -20,7 +22,9 @@ const PrivateRoute = ({ children }) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" />;
+    sessionStorage.setItem("redirectAfterLogin", location.pathname); // Save intended path
+    // Redirect to login and preserve the current location in state
+    return <Navigate to="/login" replace />;
   }
 
   return children;

@@ -278,37 +278,51 @@ const ViewPlan = () => {
 
         <Divider sx={{ my: 3 }} />
 
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
           Investment Recommendations
         </Typography>
-        <Typography variant="body1" paragraph>
-          {plan.recommendations ||
-            "Based on your risk profile and monthly investment amount, we recommend diversifying your portfolio across different asset classes to balance risk and potential returns."}
-        </Typography>
 
-        <Typography variant="subtitle1" gutterBottom>
-          SIP Recommendations:
-        </Typography>
-        <Typography variant="body1" paragraph>
-          {plan.sipRecommendations ||
-            "Consider investing in a mix of equity mutual funds, debt funds, and index funds to create a balanced portfolio."}
-        </Typography>
+        <Paper elevation={2} sx={{ p: 2, mb: 3, backgroundColor: "#f5f5f5" }}>
+          <Typography variant="body1">
+            {"Based on your risk profile and monthly investment amount, we recommend diversifying your portfolio across different asset classes to balance risk and potential returns."}
+          </Typography>
+        </Paper>
 
-        <Typography variant="subtitle1" gutterBottom>
-          Cryptocurrency Recommendations:
-        </Typography>
-        <Typography variant="body1" paragraph>
-          {plan.cryptoRecommendations ||
-            "Consider established cryptocurrencies like Bitcoin and Ethereum for long-term investment, with a smaller portion allocated to promising altcoins."}
-        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={4}>
+            <Paper elevation={3} sx={{ p: 2, height: "100%" }}>
+              <Typography variant="h6" gutterBottom sx={{ color: "#1976d2" }}>
+                SIP Recommendations
+              </Typography>
+              <Typography variant="body2">
+                {plan.recommendations?.sips || "Consider investing in a mix of equity mutual funds, debt funds, and index funds to create a balanced portfolio."}
+              </Typography>
+            </Paper>
+          </Grid>
 
-        <Typography variant="subtitle1" gutterBottom>
-          Gold Recommendations:
-        </Typography>
-        <Typography variant="body1" paragraph>
-          {plan.goldRecommendations ||
-            "Consider investing in gold ETFs or sovereign gold bonds for better liquidity and returns compared to physical gold."}
-        </Typography>
+          <Grid item xs={12} md={4}>
+            <Paper elevation={3} sx={{ p: 2, height: "100%" }}>
+              <Typography variant="h6" gutterBottom sx={{ color: "#d32f2f" }}>
+                Cryptocurrency Recommendations
+              </Typography>
+              <Typography variant="body2">
+                {plan.recommendations?.cryptocurrency || "Consider established cryptocurrencies like Bitcoin and Ethereum for long-term investment, with a smaller portion allocated to promising altcoins."}
+              </Typography>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Paper elevation={3} sx={{ p: 2, height: "100%" }}>
+              <Typography variant="h6" gutterBottom sx={{ color: "#f9a825" }}>
+                Gold Recommendations
+              </Typography>
+              <Typography variant="body2">
+                {plan.recommendations?.gold || "Consider investing in gold ETFs or sovereign gold bonds for better liquidity and returns compared to physical gold."}
+              </Typography>
+            </Paper>
+          </Grid>
+        </Grid>
+
       </Paper>
     </Container>
   );

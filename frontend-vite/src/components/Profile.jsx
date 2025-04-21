@@ -28,14 +28,17 @@ const Profile = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // console.log("User date:", user.createdAt);
+  // console.log("User date:", user.email);
+
   useEffect(() => {
     fetchPlans();
   }, []);
 
   const fetchPlans = async () => {
     try {
-      const response = await axiosInstance.get("/api/investment/plans");
-      setPlans(response.data);
+      // const response = await axiosInstance.get("/investment/plans");
+      // setPlans(response.data);
     } catch (error) {
       console.error("Error fetching plans:", error);
     } finally {

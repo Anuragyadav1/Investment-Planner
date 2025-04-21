@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { useNavigate, useLocation, Link as RouterLink } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import {
   Container,
@@ -18,6 +18,14 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const location = useLocation();
+  console.log("location.state:", location.state); // 👈 debug this
+
+  let from = sessionStorage.getItem("redirectAfterLogin") || "/";
+  console.log("Redirecting to:", from);
+
+
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
@@ -27,7 +35,8 @@ const Login = () => {
       setLoading(true);
       const result = await login(email, password);
       if (result.success) {
-        navigate("/");
+        sessionStorage.removeItem("redirectAfterLogin"); // ✅ clear the stored path
+        navigate(from, { replace: true }); // 👈 redirect to intended page
       } else {
         setError(result.error);
       }
