@@ -59,7 +59,7 @@ const ViewPlan = () => {
   };
 
   const handleBack = () => {
-    navigate("/");
+    navigate("/dashboard");
   };
 
   const handleShare = () => {
@@ -70,26 +70,35 @@ const ViewPlan = () => {
 
   const handleDownloadPDF = async () => {
     if (!planRef.current) return;
-
+  
     setDownloading(true);
     try {
       const canvas = await html2canvas(planRef.current, {
         scale: 2,
         logging: false,
+        width: planRef.current.scrollWidth,  // Set width dynamically
+        height: planRef.current.scrollHeight,  // Set height dynamically
       });
-
+  
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
         format: "a4",
       });
-
+  
       const imgProps = pdf.getImageProperties(imgData);
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+  
+      // If the image height exceeds the A4 size, scale it down
+      if (pdfHeight > pdf.internal.pageSize.getHeight()) {
+        const scale = pdf.internal.pageSize.getHeight() / pdfHeight;
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth * scale, pdfHeight * scale);
+      } else {
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      }
+  
       pdf.save(`${plan.name || "Investment Plan"}.pdf`);
     } catch (err) {
       console.error("Error generating PDF:", err);
@@ -98,6 +107,7 @@ const ViewPlan = () => {
       setDownloading(false);
     }
   };
+  
 
   if (loading) {
     return (
@@ -186,7 +196,8 @@ const ViewPlan = () => {
         </Box>
       </Box>
 
-      <Paper ref={planRef} sx={{ p: 3 }}>
+      <Paper ref={planRef} sx={{ p: 3 }}
+      >
         <Typography variant="h4" component="h1" gutterBottom>
           {plan.name || "Investment Plan"}
         </Typography>

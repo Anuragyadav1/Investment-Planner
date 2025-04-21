@@ -93,7 +93,7 @@ const Profile = () => {
                 mb: 2,
               }}
             >
-              <Typography variant="h6">Investment Plans</Typography>
+              <Typography variant="h6" sx={{ mr: 2 }}>Investment Plans</Typography>
               <Button
                 variant="contained"
                 endIcon={<ArrowForwardIcon />}
@@ -150,7 +150,7 @@ const Profile = () => {
                 color="text.secondary"
                 sx={{ textAlign: "center", py: 3 }}
               >
-                You haven't created any investment plans yet.
+                {/* You haven't created any investment plans yet. */}
               </Typography>
             )}
           </Grid>

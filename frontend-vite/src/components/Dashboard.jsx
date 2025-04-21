@@ -22,6 +22,18 @@ import {
 } from "@mui/icons-material";
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip as ChartTooltip,
+  Legend,
+} from "chart.js";
+import { Pie } from "react-chartjs-2";
+
+// Register ChartJS components
+ChartJS.register(ArcElement, ChartTooltip, Legend);
 
 const Dashboard = () => {
   const [plans, setPlans] = useState([]);
@@ -67,6 +79,154 @@ const Dashboard = () => {
     const shareUrl = `${window.location.origin}/view-plan/${planId}`;
     navigator.clipboard.writeText(shareUrl);
     alert("Plan link copied to clipboard!");
+  };
+
+  const handleDownloadPDF = async (plan) => {
+    try {
+      // Create a temporary container for PDF generation
+      const tempContainer = document.createElement("div");
+      tempContainer.style.width = "800px";
+      tempContainer.style.position = "absolute";
+      tempContainer.style.left = "-9999px";
+      tempContainer.style.top = "-9999px";
+      document.body.appendChild(tempContainer);
+
+      // Create the content for PDF
+      const content = document.createElement("div");
+      content.style.padding = "20px";
+      content.style.backgroundColor = "white";
+
+      // Add plan details
+      content.innerHTML = `
+        <h1 style="text-align: center; margin-bottom: 20px;">${
+          plan.planName || "Investment Plan"
+        }</h1>
+        <div style="margin-bottom: 20px;">
+          <p><strong>Monthly Investment:</strong> ₹${
+            plan.monthlyIncome?.toLocaleString() || 0
+          }</p>
+          <p><strong>Risk Level:</strong> ${plan.riskLevel}</p>
+          <p><strong>Created:</strong> ${new Date(
+            plan.createdAt
+          ).toLocaleDateString()}</p>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <h2>Investment Allocation</h2>
+          <p><strong>SIPs:</strong> ${
+            plan.allocation?.sips?.percentage || 50
+          }% (₹${(
+        (plan.monthlyIncome * (plan.allocation?.sips?.percentage || 50)) /
+        100
+      ).toLocaleString()})</p>
+          <p><strong>Cryptocurrency:</strong> ${
+            plan.allocation?.cryptocurrency?.percentage || 30
+          }% (₹${(
+        (plan.monthlyIncome *
+          (plan.allocation?.cryptocurrency?.percentage || 30)) /
+        100
+      ).toLocaleString()})</p>
+          <p><strong>Gold:</strong> ${
+            plan.allocation?.gold?.percentage || 20
+          }% (₹${(
+        (plan.monthlyIncome * (plan.allocation?.gold?.percentage || 20)) /
+        100
+      ).toLocaleString()})</p>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <h2>Investment Recommendations</h2>
+          <p>${
+            plan.recommendations ||
+            "Based on your risk profile and monthly investment amount, we recommend diversifying your portfolio across different asset classes to balance risk and potential returns."
+          }</p>
+        </div>
+      `;
+
+      // Add chart
+      const chartContainer = document.createElement("div");
+      chartContainer.style.width = "400px";
+      chartContainer.style.height = "300px";
+      chartContainer.style.margin = "0 auto";
+
+      const canvas = document.createElement("canvas");
+      chartContainer.appendChild(canvas);
+
+      // Prepare chart data
+      const chartData = {
+        labels: ["SIPs", "Cryptocurrency", "Gold"],
+        datasets: [
+          {
+            data: [
+              plan.allocation?.sips?.percentage || 50,
+              plan.allocation?.cryptocurrency?.percentage || 30,
+              plan.allocation?.gold?.percentage || 20,
+            ],
+            backgroundColor: [
+              "rgba(54, 162, 235, 0.8)",
+              "rgba(255, 99, 132, 0.8)",
+              "rgba(255, 206, 86, 0.8)",
+            ],
+            borderColor: [
+              "rgba(54, 162, 235, 1)",
+              "rgba(255, 99, 132, 1)",
+              "rgba(255, 206, 86, 1)",
+            ],
+            borderWidth: 1,
+          },
+        ],
+      };
+
+      const chartOptions = {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "bottom",
+          },
+        },
+        animation: false,
+      };
+
+      // Create and render the chart
+      new ChartJS(canvas, {
+        type: "pie",
+        data: chartData,
+        options: chartOptions,
+      });
+
+      content.appendChild(chartContainer);
+      tempContainer.appendChild(content);
+
+      // Wait for chart to render
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Generate PDF
+      const pdfCanvas = await html2canvas(tempContainer, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        width: 800,
+        height: tempContainer.scrollHeight,
+      });
+
+      // Remove temporary container
+      document.body.removeChild(tempContainer);
+
+      const imgData = pdfCanvas.toDataURL("image/png");
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`${plan.planName || "Investment Plan"}.pdf`);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Failed to generate PDF. Please try again.");
+    }
   };
 
   return (
@@ -136,7 +296,10 @@ const Dashboard = () => {
                   </Button>
                   <Box sx={{ flexGrow: 1 }} />
                   <Tooltip title="Download PDF">
-                    <IconButton size="small">
+                    <IconButton
+                      size="small"
+                      onClick={() => handleDownloadPDF(plan)}
+                    >
                       <DownloadIcon />
                     </IconButton>
                   </Tooltip>
